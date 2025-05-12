@@ -158,6 +158,8 @@ def main():
                         help='表示するアバターのURL（省略可）')
     parser.add_argument('--attachments', '-f', nargs='+',
                         help='添付ファイルのパス（複数指定可）')
+    parser.add_argument('--dry-run', '-d', action='store_true',
+                        help='実際に送信せずに設定とペイロードを表示する（テスト用）')
     
     args = parser.parse_args()
     
@@ -175,6 +177,17 @@ def main():
     
     # アバターURLの決定（コマンドライン引数 > 設定ファイル）
     avatar_url = args.avatar_url or config.get('default_avatar_url')
+    
+    # ドライランモードの場合は設定とペイロードを表示するだけ
+    if args.dry_run:
+        print("=== ドライランモード（実際には送信されません） ===")
+        print(f"設定ファイル: {args.config}")
+        print(f"ウェブフックURL: {webhook_url}")
+        print(f"メッセージ: {args.message}")
+        print(f"ユーザー名: {username}")
+        print(f"アバターURL: {avatar_url}")
+        print(f"添付ファイル: {args.attachments}")
+        sys.exit(0)
     
     # 通知の送信
     notifier = DiscordNotifier(webhook_url)

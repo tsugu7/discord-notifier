@@ -54,6 +54,7 @@ python src/discord_notifier.py --message "メッセージ内容" [オプショ�
 | `--username` | `-u` | 表示するユーザー名 | いいえ |
 | `--avatar-url` | `-a` | 表示するアバターのURL | いいえ |
 | `--attachments` | `-f` | 添付ファイルのパス（複数指定可） | いいえ |
+| `--dry-run` | `-d` | 実際に送信せずに設定とペイロードを表示する（テスト用） | いいえ |
 
 *ウェブフックURLは、コマンドライン引数または設定ファイルのいずれかで指定する必要があります。
 
@@ -87,6 +88,12 @@ python src/discord_notifier.py --message "こんにちは！" --username "通知
 
 ```bash
 python src/discord_notifier.py --message "ファイルを添付します" --attachments "path/to/file1.txt" "path/to/file2.jpg"
+```
+
+ドライラン（テスト）モードで実行：
+
+```bash
+python src/discord_notifier.py --message "テストメッセージ" --dry-run
 ```
 
 ## 注意事項
