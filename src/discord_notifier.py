@@ -6,6 +6,7 @@ Discord Notifier
 
 Discordのウェブフックを使用して通知を送信するスクリプト。
 メッセージと添付ファイルを送信できます。
+設定ファイルからウェブフックURLを読み込むことができます。
 """
 
 import argparse
@@ -13,7 +14,7 @@ import json
 import os
 import sys
 import requests
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 
 class DiscordNotifier:
@@ -116,12 +117,39 @@ class DiscordNotifier:
             return False
 
 
+def load_config(config_path: str) -> Dict[str, Any]:
+    """
+    設定ファイルを読み込む
+    
+    Args:
+        config_path: 設定ファイルのパス
+        
+    Returns:
+        Dict[str, Any]: 設定内容
+    """
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+        return config
+    except FileNotFoundError:
+        print(f"エラー: 設定ファイル '{config_path}' が見つかりません。", file=sys.stderr)
+        sys.exit(1)
+    except json.JSONDecodeError:
+        print(f"エラー: 設定ファイル '{config_path}' の形式が正しくありません。", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"エラー: 設定ファイルの読み込みに失敗しました - {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 def main():
     """メイン関数"""
     parser = argparse.ArgumentParser(description='Discordに通知を送信するスクリプト')
     
-    parser.add_argument('--webhook-url', '-w', required=True,
-                        help='Discordのウェブフック URL')
+    parser.add_argument('--config', '-c', default='config.json',
+                        help='設定ファイルのパス（デフォルト: config.json）')
+    parser.add_argument('--webhook-url', '-w',
+                        help='Discordのウェブフック URL（設定ファイルよりも優先）')
     parser.add_argument('--message', '-m', required=True,
                         help='送信するメッセージ')
     parser.add_argument('--username', '-u',
@@ -133,12 +161,27 @@ def main():
     
     args = parser.parse_args()
     
+    # 設定ファイルの読み込み
+    config = load_config(args.config)
+    
+    # ウェブフックURLの決定（コマンドライン引数 > 設定ファイル）
+    webhook_url = args.webhook_url or config.get('webhook_url')
+    if not webhook_url:
+        print("エラー: ウェブフックURLが指定されていません。コマンドライン引数または設定ファイルで指定してください。", file=sys.stderr)
+        sys.exit(1)
+    
+    # ユーザー名の決定（コマンドライン引数 > 設定ファイル）
+    username = args.username or config.get('default_username')
+    
+    # アバターURLの決定（コマンドライン引数 > 設定ファイル）
+    avatar_url = args.avatar_url or config.get('default_avatar_url')
+    
     # 通知の送信
-    notifier = DiscordNotifier(args.webhook_url)
+    notifier = DiscordNotifier(webhook_url)
     success = notifier.send_message(
         message=args.message,
-        username=args.username,
-        avatar_url=args.avatar_url,
+        username=username,
+        avatar_url=avatar_url,
         attachments=args.attachments
     )
     

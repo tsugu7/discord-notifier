@@ -1,0 +1,5 @@
+{
+  "webhook_url": "https://discord.com/api/webhooks/your-webhook-url",
+  "default_username": "Discord通知",
+  "default_avatar_url": ""
+}
