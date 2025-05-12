@@ -84,16 +84,27 @@ class DiscordNotifier:
                 
                 file_name = os.path.basename(file_path)
                 files.append(
-                    ('file' + str(i), (file_name, open(file_path, 'rb'), 'application/octet-stream'))
+                    ('files[' + str(i) + ']', (file_name, open(file_path, 'rb'), 'application/octet-stream'))
                 )
             
-            # ペイロードをJSONに変換
-            payload_json = json.dumps(payload)
+            # フォームデータとしてペイロードを送信
+            form_data = {'payload_json': json.dumps(payload)}
+            
+            # デバッグ情報
+            print(f"送信先URL: {self.webhook_url}")
+            print(f"ペイロード: {payload}")
+            print(f"添付ファイル数: {len(files)}")
+            
             response = requests.post(
                 self.webhook_url,
-                data={'payload_json': payload_json},
+                data=form_data,
                 files=files
             )
+            
+            # レスポンスの詳細を表示
+            print(f"ステータスコード: {response.status_code}")
+            print(f"レスポンス: {response.text}")
+            
             response.raise_for_status()
             
             # ファイルを閉じる
