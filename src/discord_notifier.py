@@ -61,13 +61,25 @@ class DiscordNotifier:
         if avatar_url:
             payload["avatar_url"] = avatar_url
         
+        # デバッグ情報
+        print(f"送信先URL: {self.webhook_url}")
+        print(f"ペイロード: {payload}")
+        
         # 添付ファイルがない場合
         if not attachments:
             try:
+                # フォームデータとしてペイロードを送信
+                form_data = {'payload_json': json.dumps(payload)}
+                
                 response = requests.post(
                     self.webhook_url,
-                    json=payload
+                    data=form_data
                 )
+                
+                # レスポンスの詳細を表示
+                print(f"ステータスコード: {response.status_code}")
+                print(f"レスポンス: {response.text}")
+                
                 response.raise_for_status()
                 return True
             except requests.exceptions.RequestException as e:
