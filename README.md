@@ -1,6 +1,3 @@
-# discord-notifier
-Discort通知のサンプル
-=======
 # Discord Notifier
 
 Discordのウェブフックを使用して通知を送信するPythonスクリプトです。メッセージと添付ファイルを送信できます。
