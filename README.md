@@ -69,7 +69,3 @@ python src/discord_notifier.py --webhook-url "https://discord.com/api/webhooks/y
 - ウェブフックURLは公開しないように注意してください。
 - 添付ファイルの合計サイズには制限があります（Discordの制限に依存）。
 - 一度に送信できる添付ファイルの数にも制限があります。
-
-## ライセンス
-
-MITライセンス
